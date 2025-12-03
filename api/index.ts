@@ -134,9 +134,10 @@ io.on("connection", (socket) => {
      */
     socket.on("signal", (to, from, data) => {
         if (to in peers) {
-            io.to(to).emit("signal", to, from, data);
+            io.to(to).emit("signal", from, to, data);
+            console.log(`Signal routed from ${from} to ${to}`);
         } else {
-            console.log("Peer not found!");
+            console.log(`Peer ${to} not found! Cannot route signal from ${from}`);
         }
     });
 
