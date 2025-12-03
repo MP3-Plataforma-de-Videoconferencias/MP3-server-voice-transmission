@@ -41,17 +41,23 @@ app.use(express.json());
  * }
  */
 app.get('/api/ice-config', (req, res) => {
+    const iceServers: any[] = [
+        {
+            urls: 'stun:stun.l.google.com:19302'
+        }
+    ];
+
+    // Only add TURN server if all required credentials are configured
+    if (process.env.TURN_URL && process.env.TURN_USERNAME && process.env.TURN_PASSWORD) {
+        iceServers.push({
+            urls: process.env.TURN_URL.split(",").map(u => u.trim()),
+            username: process.env.TURN_USERNAME,
+            credential: process.env.TURN_PASSWORD,
+        });
+    }
+
     const config = {
-        iceServers: [
-            {
-                urls: 'stun:stun.l.google.com:19302'
-            },
-            {
-                urls: process.env.TURN_URL?.split(",").map(u => u.trim()),
-                username: process.env.TURN_USERNAME,
-                credential: process.env.TURN_PASSWORD,
-            }
-        ]
+        iceServers
     };
 
     res.json(config);
